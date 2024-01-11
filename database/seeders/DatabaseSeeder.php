@@ -14,9 +14,15 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
+        // \App\Models\User::factory(10)->create([
+        //     'name' => 'Lexas',
+        //     'plate_number' => 'plate_number',
+        //     'chesis_number' => 'chesis_number',
+        //     'type' => 'type',
+        //     'model' => 'model',
+        //     'uuid' => uniqid(),
         // ]);
+        $this->call(UserSeeder::class);
+        $this->call(VehicleSeeder::class);
     }
 }

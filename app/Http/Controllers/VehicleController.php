@@ -45,7 +45,10 @@ class VehicleController extends Controller
         // dd(request()->all());
         request()->validate([
             'name' => 'required',
-            'description' => 'required',
+            'model' => 'required',
+            'type' => 'required',
+            'plate_number' => 'required',
+            'chesis_number' => 'required',
         ]);
         if (request()->hasFile('image')) {
             $path = time().request('image').extension();
@@ -53,16 +56,24 @@ class VehicleController extends Controller
 
             \App\Models\Vehicle::create([
                 'name' => request('name'),
-                'description' => request('description'),
+                'model' => request('model'),
+                'type' => request('type'),
+                'plate_number' => request('plate_number'),
+                'chesis_number' => request('chesis_number'),
                 'image' => $path,
-                'uuid' => uniqid()
+                'uuid' => \Str::uuid(),
+            ]);
+        } else {
+            \App\Models\Vehicle::create([
+                'name' => request('name'),
+                'model' => request('model'),
+                'type' => request('type'),
+                'plate_number' => request('plate_number'),
+                'chesis_number' => request('chesis_number'),
+                'uuid' => \Str::uuid(),
             ]);
         }
-        \App\Models\Vehicle::create([
-            'name' => request('name'),
-            'description' => request('description'),
-            'uuid' => uniqid()
-        ]);
+ 
         return response()->json(['success' => 'Vehicle added']);
     }
 
@@ -83,16 +94,34 @@ class VehicleController extends Controller
 
     public function update($uuid)
     {
-        dd(request()->all());
         request()->validate([
             'name' => 'required',
-            'description' => 'required',
+            'model' => 'required',
+            'type' => 'required',
+            'plate_number' => 'required',
+            'chesis_number' => 'required',
         ]);
-        $data = request()->all();
-        \App\Models\Vehicle::where('uuid', $uuid)->first()->update([
-            'name' => request('name'),
-            'description' => request('description'),
-        ]);
+        if (request()->hasFile('image')) {
+            $path = time().request('image').extension();
+            request('image').move(public_path('images'), $path);
+
+            \App\Models\Vehicle::where('uuid', $uuid)->update([
+                'name' => request('name'),
+                'model' => request('model'),
+                'type' => request('type'),
+                'plate_number' => request('plate_number'),
+                'chesis_number' => request('chesis_number'),
+                'image' => $path,
+            ]);
+        } else {
+            \App\Models\Vehicle::where('uuid', $uuid)->update([
+                'name' => request('name'),
+                'model' => request('model'),
+                'type' => request('type'),
+                'plate_number' => request('plate_number'),
+                'chesis_number' => request('chesis_number'),
+            ]);
+        }
         return response()->json(['success', 'Vehicle updated']);
     }
 

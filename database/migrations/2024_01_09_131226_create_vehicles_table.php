@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('chesis_number');
             $table->string('type');
             $table->string('model');
-            $table->string('uuid');
+            $table->string('uuid')->nullable();
             $table->timestamps();
         });
     }

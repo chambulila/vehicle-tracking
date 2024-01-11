@@ -30,8 +30,8 @@
                 <td>{{ $serv->model }}</td>
                 <td>{{ $serv->type }}</td>
                 <td>
-                     <button type="button" class="btn  btn-outline-secondary btn-sm" value="{{ $serv->uuid }}" id="edit">Edit</button>
-                     <button type="button" class="btn  btn-outline-danger btn-sm" onclick="archiveFunction('<?= $serv->uuid  ?>')">Delete</button>
+                     <button type="button" class="btn  btn-outline-secondary btn-sm edit" value="{{ $serv->uuid }}" id="edit">Edit</button>
+                     <button type="button" class="btn  btn-outline-danger btn-sm delete" value="{{ $serv->uuid }}">Delete</button>
                 </td>
               </tr>
             @endforeach
@@ -56,20 +56,38 @@
                    @csrf
                     <div class="card card-dark">
                         <div class="card-header">
-                          <h3 class="card-title">Add Service</small></h3>
+                          <h3 class="card-title">Add Vehicle</small></h3>
                         </div>
                           <div class="card-body">
-                            <div class="form-group">
-                              <label for="exampleInputEmail1">Service Name</label>
-                              <input type="text" name="name" class="form-control" id="name" placeholder="Name">
-                            </div>
-                            <div class="form-group">
-                              <label for="exampleInputEmail1">Service Description</label>
-                              <input type="text" name="description" class="form-control" id="description" placeholder="Description">
-                            </div>
-                            <div class="form-group">
-                              <label for="exampleInputPassword1">Service Password</label>
-                              <input type="file" name="image" class="form-control" id="image" placeholder="File">
+                            <div class="row">
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                  <label for="exampleInputEmail1">Vehicle Name</label>
+                                  <input type="text" name="name" class="form-control" id="name" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                  <label for="exampleInputEmail1">Vehicle Model </label>
+                                  <input type="text" name="model" class="form-control" id="model" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                  <label for="exampleInputPassword1">Vehicle Type</label>
+                                  <input type="text" name="type" class="form-control" id="type" placeholder="">
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                  <label for="exampleInputPassword1">Plate Number</label>
+                                  <input type="text" name="plate_number" class="form-control" id="plate_number" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                  <label for="exampleInputPassword1">Chesis Number</label>
+                                  <input type="text" name="chesis_number" class="form-control" id="chesis_number" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                  <label for="exampleInputPassword1">Vehicle Image</label>
+                                  <input type="file" name="image" class="form-control" id="image" placeholder="">
+                                </div>
+                              </div>
                             </div>
                           </div>
                       </div>
@@ -98,22 +116,38 @@
                    @csrf
                     <div class="card card-dark">
                         <div class="card-header">
-                          <h3 class="card-title">Edit Service</small></h3>
+                          <h3 class="card-title">Edit Vehicle</small></h3>
                         </div>
-                          <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-6">
                             <div class="form-group">
-                              <label for="exampleInputEmail1">Service Name</label>
-                              <input type="text" name="name" class="form-control" id="namee" placeholder="Name">
+                              <label for="exampleInputEmail1">Vehicle Name</label>
+                              <input type="text" name="namee" class="form-control" id="namee" placeholder="">
                             </div>
                             <div class="form-group">
-                              <label for="exampleInputEmail1">Service Description</label>
-                              <input type="text" name="description" class="form-control" id="descriptione" placeholder="Description">
+                              <label for="exampleInputEmail1">Vehicle Model </label>
+                              <input type="text" name="modell" class="form-control" id="modell" placeholder="">
                             </div>
                             <div class="form-group">
-                              <label for="exampleInputPassword1">Service Password</label>
-                              <input type="file" name="image" class="form-control" id="imagee" placeholder="File">
+                              <label for="exampleInputPassword1">Vehicle Type</label>
+                              <input type="text" name="typp" class="form-control" id="typp" placeholder="">
                             </div>
                           </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="exampleInputPassword1">Plate Number</label>
+                              <input type="text" name="plate_numberr" class="form-control" id="plate_numberr" placeholder="">
+                            </div>
+                            <div class="form-group">
+                              <label for="exampleInputPassword1">Vehicle Type</label>
+                              <input type="text" name="chesis_numberr" class="form-control" id="chesis_numberr" placeholder="">
+                            </div>
+                            <div class="form-group">
+                              <label for="exampleInputPassword1">Vehicle Image</label>
+                              <input type="file" name="image" class="form-control" id="image" placeholder="">
+                            </div>
+                          </div>
+                        </div>
                       </div>
                       <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Close</button>
@@ -156,13 +190,16 @@ $('#sendData').click(function(event){
             event.preventDefault();
             var  form = {
                     name: $('#name').val(),
-                    description: $('#description').val(),
+                    model: $('#model').val(),
+                    type: $('#type').val(),
+                    plate_number: $('#plate_number').val(),
+                    chesis_number: $('#chesis_number').val(),
                     image: $('#image').val(),
                 }
 
-                if ($('#name').val() !== ''  && $('#description').val() !== '') {
+                if ($('#name').val() !== ''  && $('#plate_number').val() !== '') {
                   $.ajax({
-                    url: '/services/store',
+                    url: '/vehicles/store',
                     method: 'post',
                     dataType: 'JSON',
                     data: form,
@@ -195,7 +232,7 @@ $('#sendData').click(function(event){
   e.preventDefault();
   var id = $('#edit').attr('value');
   $.ajax({
-    url: '/services/update/' + id,
+    url: '/vehicles/update/' + id,
     method: 'post',
     data: {
             name: $('#namee').val(),
@@ -233,11 +270,14 @@ $('tbody').html(data);
   $(document).on('click', '.edit', function () {
           var uuid = $(this).attr('value');
           $.ajax({
-          url: '/services/edit/' + uuid,
+          url: '/vehicles/edit/' + uuid,
           method: 'get',
           success: function(response){
           $('#namee').val(response.name);
-          $('#descriptione').val(response.description);
+          $('#modell').val(response.model);
+          $('#typp').val(response.type);
+          $('#chesis_numberr').val(response.chesis_number);
+          $('#plate_numberr').val(response.plate_number);
           $('#edit-modal').modal('show');
           }
   });
@@ -261,7 +301,7 @@ $(document).on('click', '.delete', function () {
         if (result.isConfirmed) {
             $.ajax({
                 method: 'delete',
-                url: '/services/destroy/' + uuid,
+                url: '/vehicles/destroy/' + uuid,
                 success: function(response) {
                     toastr.success(response.success);
                     getData();
