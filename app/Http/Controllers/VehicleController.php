@@ -140,4 +140,9 @@ class VehicleController extends Controller
             return response()->json('error', 'Not found!');
         }
     }
+
+    public function map()
+    {
+        return view('pages.vehicle.map');
+    }
 }

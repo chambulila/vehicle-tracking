@@ -14,3 +14,4 @@ Route::get('/vehicles/edit/{uuid}', [VehicleController::class, 'edit'])->name('v
 Route::get('/vehicles/update/{uuid}', [VehicleController::class, 'update'])->name('vehicles.update');
 Route::get('/vehicles/show/{uuid}', [VehicleController::class, 'show'])->name('vehicles.show');
 Route::delete('/vehicles/destroy/{uuid}', [VehicleController::class, 'destroy'])->name('vehicles.destroy');
+Route::get('/map', [VehicleController::class, 'map'])->name('vehicles.map');

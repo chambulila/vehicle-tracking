@@ -32,6 +32,7 @@
                 <td>
                      <button type="button" class="btn  btn-outline-secondary btn-sm edit" value="{{ $serv->uuid }}" id="edit">Edit</button>
                      <button type="button" class="btn  btn-outline-danger btn-sm delete" value="{{ $serv->uuid }}">Delete</button>
+                     <a href="#" class="btn  btn-outline-secondary btn-sm ">Track</a>
                 </td>
               </tr>
             @endforeach
