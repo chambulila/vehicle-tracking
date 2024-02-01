@@ -94,6 +94,7 @@ class VehicleController extends Controller
 
     public function update($uuid)
     {
+        // dd(request()->all());
         request()->validate([
             'name' => 'required',
             'model' => 'required',

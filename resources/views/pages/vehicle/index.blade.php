@@ -32,7 +32,7 @@
                 <td>
                      <button type="button" class="btn  btn-outline-secondary btn-sm edit" value="{{ $serv->uuid }}" id="edit">Edit</button>
                      <button type="button" class="btn  btn-outline-danger btn-sm delete" value="{{ $serv->uuid }}">Delete</button>
-                     <a href="#" class="btn  btn-outline-secondary btn-sm ">Track</a>
+                     <a href="{{ url('map') }}" class="btn  btn-outline-secondary btn-sm ">Track</a>
                 </td>
               </tr>
             @endforeach
@@ -131,7 +131,7 @@
                             </div>
                             <div class="form-group">
                               <label for="exampleInputPassword1">Vehicle Type</label>
-                              <input type="text" name="typp" class="form-control" id="typp" placeholder="">
+                              <input type="text" name="typee" class="form-control" id="typee" placeholder="">
                             </div>
                           </div>
                           <div class="col-md-6">
@@ -145,14 +145,14 @@
                             </div>
                             <div class="form-group">
                               <label for="exampleInputPassword1">Vehicle Image</label>
-                              <input type="file" name="image" class="form-control" id="image" placeholder="">
+                              <input type="file" name="imagee" class="form-control" id="image" placeholder="">
                             </div>
                           </div>
                         </div>
                       </div>
                       <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Close</button>
-                        <button type="submit"  class="btn btn-outline-success"  id="update">Save changes</button>
+                        <button type="submit"  class="btn btn-outline-success update"  id="update">Save changes</button>
                       </div>
                     </form>
                 </div>
@@ -229,23 +229,26 @@ $('#sendData').click(function(event){
 
 
 
-    $('#update').click(function(e){
+    $('.update').click(function(e){
   e.preventDefault();
+  var  form = {
+                    name: $('#namee').val(),
+                    model: $('#modell').val(),
+                    type: $('#typee').val(),
+                    plate_number: $('#plate_numberr').val(),
+                    chesis_number: $('#chesis_numberr').val(),
+                    image: $('#imagee').val(),
+                }
   var id = $('#edit').attr('value');
   $.ajax({
     url: '/vehicles/update/' + id,
     method: 'post',
-    data: {
-            name: $('#namee').val(),
-            description: $('#descriptione').val(),
-            image: $('#imagee').val(),
-    },
-    dataType: 'JSON',
-    success: function(response){
-      $('#namee').val(response.name);
-    $('#descriptione').val(response.description);
-      $('#edit-modal').modal('show');
-    }
+    data: form,
+   dataType: 'JSON',
+   success: function(response){
+    toastr.success(response.success);
+    location.reload();     
+   }
 
   })
 });
@@ -276,7 +279,7 @@ $('tbody').html(data);
           success: function(response){
           $('#namee').val(response.name);
           $('#modell').val(response.model);
-          $('#typp').val(response.type);
+          $('#typee').val(response.type);
           $('#chesis_numberr').val(response.chesis_number);
           $('#plate_numberr').val(response.plate_number);
           $('#edit-modal').modal('show');
@@ -305,7 +308,8 @@ $(document).on('click', '.delete', function () {
                 url: '/vehicles/destroy/' + uuid,
                 success: function(response) {
                     toastr.success(response.success);
-                    getData();
+                    // getData();
+                    location.reload();
                 },
                 error: function(response) {
                     toastr.error('An error occured!');
