@@ -146,4 +146,21 @@ class VehicleController extends Controller
     {
         return view('pages.vehicle.map');
     }
+
+    public function showGeofenceForm()
+    {
+        return view('pages.vehicle.geofenceForm');
+    }
+
+    public function saveGeofence(Request $request)
+    {
+        $user = new \App\Models\Geofence;
+        $user->latitude = $request->input('latitude');
+        $user->longitude = $request->input('longitude');
+        $user->vehicle_id = 1;
+        $user->save();
+
+        return redirect('/')->with('success', 'Geofence saved successfully.');
+    }
+    
 }

@@ -7,6 +7,14 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""/>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""></script>
+
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
@@ -42,6 +50,8 @@
       #map {
           height: 500px;
       }
+
+      #geofence { height: 180px; }
   </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -155,6 +165,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ url('users') }}" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Users
+              </p>
+            </a>
+          </li>
           </li>
             </ul>
           </li>
@@ -172,6 +190,11 @@
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
+        @if (session()->has('success'))
+        <div class="alert alert-success" role="alert">
+          <strong>{{ session('success') }}</strong>
+        </div>
+        @endif
         @yield('content')
       </div><!-- /.container-fluid -->
     </section>
