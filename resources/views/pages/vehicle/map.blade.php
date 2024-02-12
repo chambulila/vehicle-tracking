@@ -71,21 +71,33 @@
                   .then(response => response.json())
                   .then(data => {
                       // Assuming your API response has latitude and longitude properties
-                      const { latitude, longitude } = data;
+                      const { latitude, longitude, v_id } = data;
   
                       // Update the marker position with the new coordinates
-                      console.log(data[longitude]);
                       updateMarkerPosition(parseFloat(data[0].latitude), parseFloat(data[0].longitude));
+                      $.ajax({
+                        type: "post",
+                        url: "/send-geocodes-from-api" ,
+                        data: {
+                            latitude: data[0].latitude,
+                            longitude: data[0].longitude,
+                            vehicle_id: 1,
+                        },
+                        dataType: "JSON",
+                        headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                        success: function (response) {
+                            console.log(response.success);
+                        }
+                      });
                   })
                   .catch(error => console.error('Error fetching real-time data:', error));
           }
   
           // Call the function to update the map with real-time data
           getRealTimeData();
-  
-          // Refresh every 1 second (1000 milliseconds)
-          // setInterval(getRealTimeData, 9000);
-      }
+1     }
   
       window.initMap = initMap;
   </script>
