@@ -28,4 +28,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/geofence', [VehicleController::class, 'showGeofenceForm'])->name('geofence');
     Route::post('/geofence/save', [VehicleController::class, 'saveGeofence'])->name('saveGeofence');
     Route::post('/send-geocodes-from-api', [VehicleController::class, 'sendGeocodesFromApi']);
+    Route::get('/check-the-boundary', [VehicleController::class, 'checkBoundary']);
 });

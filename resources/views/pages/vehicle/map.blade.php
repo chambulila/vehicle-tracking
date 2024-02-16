@@ -5,38 +5,6 @@
         <div id="map"></div>
     </div>
 
-    {{-- <script type="text/javascript">
-        function initMap() {
-            const myLatLng = {
-                lat: -6.776012 , lng: 39.178326
-                // plat: parseFloat(data[0].latitude), lng: parseFloat(data[0].longitude) 
-            };
-            const map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 10
-                , center: myLatLng
-            , });
-
-            const icon = {
-              url: '{{asset("car.jpg")}}',
-              scaledSize: new google.maps.Size(40, 20)
-            };
-            new google.maps.Marker({
-                position: myLatLng, map,
-                 title: 'gariiiii',
-                 icon: icon
-            , });
-
-              // Call the function to update the map with real-time data
-            getRealTimeData();
-
-          // Refresh every 1 second
-          setInterval(getRealTimeData, 6000);
-        }
-
-        window.initMap = initMap;
-
-    </script> --}}
-
     <script type="text/javascript">
       function initMap() {
           // Initial map setup

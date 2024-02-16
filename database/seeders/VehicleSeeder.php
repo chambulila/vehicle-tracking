@@ -12,7 +12,7 @@ class VehicleSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i=0; $i < 9; $i++) { 
+        for ($i=0; $i < 1; $i++) { 
             \App\Models\Vehicle::create([
                 'name' => 'Lexas',
                 'plate_number' => 'plate_number',

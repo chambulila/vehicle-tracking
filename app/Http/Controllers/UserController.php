@@ -78,9 +78,9 @@ class UserController extends Controller
             'email' =>  request('email'),
             'roleId' => (int)request('roleId')
         ]);
-        return response()->json('success', 'User info updated successfully');
+        return response()->json(['success' => 'User info updated successfully']);
      } catch (\Exception $th) {
-        return response()->json('error', $th);
+        return response()->json(['error'=> $th]);
      }
     }
 

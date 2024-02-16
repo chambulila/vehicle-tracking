@@ -126,7 +126,7 @@ class VehicleController extends Controller
                 'chesis_number' => request('chesis_number'),
             ]);
         }
-        return response()->json(['success', 'Vehicle updated']);
+        return response()->json(['success' => 'Vehicle updated']);
     }
 
 
@@ -138,10 +138,10 @@ class VehicleController extends Controller
                 $vehicle->delete();
                 return response()->json(['success' => 'Vehicle delete successfully']);
             } catch(\Exception $e) {
-                return response()->json('error', 'An error occured');
+                return response()->json(['error' => 'An error occured']);
             }
         }else {
-            return response()->json('error', 'Not found!');
+            return response()->json(['error' => 'Not found!']);
         }
     }
 
@@ -166,6 +166,56 @@ class VehicleController extends Controller
         return redirect('/')->with('success', 'Geofence saved successfully.');
     }
 
+    public function checkBoundary()
+    {
+        $vehicle = Geocode::findOrFail(1);
+        $vehicleId = $vehicle->id;
+
+        // Coordinates of the predefined area
+        $predefinedLatitude = Geofence::latest()->where('vehicle_id', $vehicleId)->first()->latitude;
+        $predefinedLongitude = Geofence::latest()->where('vehicle_id', $vehicleId)->first()->longitude;
+    
+        // Calculate the distance using the Haversine formula
+        $distance = $this->haversineDistance(
+            $predefinedLatitude,
+            $predefinedLongitude,
+            $vehicle->latitude,
+            $vehicle->longitude
+        );
+        $threshold = 10000;
+    // Check if the distance is greater than the threshold
+    if ($distance > $threshold) {
+        return response()->json(['message' => 'out of boundary']);
+    }
+
+    return response()->json(['message' => 'within the predefined area']);
+    }
+
+    // Haversine formula function
+function haversineDistance($lat1, $lon1, $lat2, $lon2)
+{
+    // Radius of the Earth in kilometers
+    $R = 6371;
+
+    // Convert latitude and longitude from degrees to radians
+    $lat1 = deg2rad($lat1);
+    $lon1 = deg2rad($lon1);
+    $lat2 = deg2rad($lat2);
+    $lon2 = deg2rad($lon2);
+
+    // Calculate the differences
+    $dlat = $lat2 - $lat1;
+    $dlon = $lon2 - $lon1;
+
+    // Haversine formula
+    $a = sin($dlat / 2) ** 2 + cos($lat1) * cos($lat2) * sin($dlon / 2) ** 2;
+    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+    // Calculate the distance
+    $distance = $R * $c;
+    return $distance;
+}
+
     public function sendGeocodesFromApi(Request $request)
     {
         $user = new \App\Models\Geocode;
@@ -174,56 +224,8 @@ class VehicleController extends Controller
         $user->vehicle_id = $request->vehicle_id;
         $user->save();
 
-        $this->checkGeofence($user->vehicle_id);
-        if ($this->status = true) {
-            return response()->json(['message' => 'out of boundary'], 401);
-        } else {
-            return response()->json(['message' => 'within the boundary'], 200);
-        }
+        // $this->checkGeofence($user->vehicle_id);
     }
 
-    public function checkGeofence($vehicleId)
-    {
-        $vehicle = Vehicle::findOrFail($vehicleId);
-        $location = Geocode::latest()->where('vehicle_id', $vehicleId)->first();
-        $codes = Geofence::where('vehicle_id', $vehicleId)->first();
-
-        // Check geofence logic (you may need to adjust the coordinates and radius)
-        $allowedLatitude = $codes->tatitude;
-        $allowedLongitude = $codes->longitudes;
-        $allowedRadius = 10; // in kilometers
-
-        $distance = $this->calculateDistance($location->latitude, $location->longitude, $allowedLatitude, $allowedLongitude);
-
-        if ($distance > $allowedRadius) {
-            $this->status = true;
-            // Vehicle is outside the geofence
-            // Trigger alert or send notification here
-            // You may use Laravel's notification system
-            // Example: $user->notify(new GeoFenceAlert($vehicle, $location));
-            // return response()->json(['message' => 'out of boundary'], 401);
-
-        }else {
-            $this->status = false;
-            // return response()->json(['message' => 'within the boundary'], 200);
-        }
-
-        // return response()->json(['message' => 'Geofence checked']);
-    }
-
-    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
-    {
-        $earthRadius = 6371; // in kilometers
-
-        $dLat = deg2rad($lat2 - $lat1);
-        $dLon = deg2rad($lon2 - $lon1);
-
-        $a = sin($dLat / 2) * sin($dLat / 2) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) * sin($dLon / 2);
-        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
-        $distance = $earthRadius * $c;
-
-        return $distance;
-    }
     
 }

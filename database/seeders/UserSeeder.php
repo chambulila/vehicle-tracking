@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             'location' => 'mabibo',
             'phone' => '0744320059',
             'password' => \Hash::make('1234567890'),
-            'email' => 'kelvinchambulila5@gmail.com',
+            'email' => 'admin@gmail.com',
             'roleId' => 1,
         ]);
     }

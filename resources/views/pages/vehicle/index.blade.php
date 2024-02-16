@@ -33,6 +33,7 @@
                      <button type="button" class="btn  btn-outline-secondary btn-sm edit" value="{{ $serv->uuid }}" id="edit">Edit</button>
                      <button type="button" class="btn  btn-outline-danger btn-sm delete" value="{{ $serv->uuid }}">Delete</button>
                      <a href="{{ url('map') }}" class="btn  btn-outline-secondary btn-sm ">Track</a>
+                     <a href="{{ url('geofence') }}" class="btn  btn-outline-secondary btn-sm ">Geofence</a>
                 </td>
               </tr>
             @endforeach

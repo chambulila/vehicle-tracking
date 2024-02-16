@@ -173,6 +173,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ url('users') }}" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Gefofence
+              </p>
+            </a>
+          </li>
           </li>
             </ul>
           </li>
@@ -191,10 +199,19 @@
     <section class="content">
       <div class="container-fluid">
         @if (session()->has('success'))
-        <div class="alert alert-success" role="alert">
-          <strong>{{ session('success') }}</strong>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <strong>{{ session('success') }}</strong> 
         </div>
+        
+        <script>
+          $(".alert").alert();
+        </script>
         @endif
+        <span id="geofence-badge" class="badge badge-pill badge-secondary">Loading...</span>
+
         @yield('content')
       </div><!-- /.container-fluid -->
     </section>
@@ -214,6 +231,35 @@
 </div>
 <!-- ./wrapper -->
 
+<script>
+  function checkGeofence() {
+      $.ajax({
+          url: '/check-the-boundary',
+          method: 'GET',  // Adjust the method based on your API
+          success: function (response) {
+            console.log(response.message);
+              if (response.message === 'out of boundary') {
+                  $('#geofence-badge').removeClass('badge-secondary').addClass('badge-danger');
+                  $('#geofence-badge').text('The vehicle is out of pre defined area');
+              } else {
+                  $('#geofence-badge').removeClass('badge-danger').addClass('badge-secondary');
+                  $('#geofence-badge').text('Within Boundary');
+              }
+          },
+          error: function (error) {
+              // console.error('Error:', error);
+          }
+      });
+  }
+
+  // Call the checkGeofence function every second
+  setInterval(checkGeofence, 1000);
+
+  // Call the checkGeofence function once on page load
+  $(document).ready(function () {
+      checkGeofence();
+  });
+</script>
 <!-- jQuery -->
 <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 <!-- jQuery UI 1.11.4 -->

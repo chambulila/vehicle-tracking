@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('plate_number');
             $table->string('chesis_number');
             $table->string('type');
+            $table->string('image');
             $table->string('model');
             $table->string('uuid')->nullable();
             $table->timestamps();
