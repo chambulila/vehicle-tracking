@@ -8,6 +8,8 @@ use App\Models\Geocode;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\Datatables;
 use DB;
+use Twilio\Rest\Client;
+
 
 class VehicleController extends Controller
 {
@@ -15,7 +17,7 @@ class VehicleController extends Controller
     public $status = null;
     public function __construct()
     {
-        return $this->middleware('auth');
+        // return $this->middleware('auth');
     }
 
     public function index()
@@ -227,5 +229,24 @@ function haversineDistance($lat1, $lon1, $lat2, $lon2)
         // $this->checkGeofence($user->vehicle_id);
     }
 
+    public function sendSms()
+    {
+        // TWILIO_SID=AC7138f025430ea3d244470aa4000ac0f5
+        // TWILIO_TOKEN=55dc6f6186094c33e6a286dc03faf533
+        // TWILIO_PHONE=+14088053716
+        $account_sid = getenv('TWILIO_SID');
+        $auth_token = getenv('TWILIO_TOKEN');
+        $twilio_number = getenv('TWILIO_PHONE');
+        $client = new Client($account_sid, $auth_token);
+        $client->messages->create(
+            // Where to send a text message (your cell phone?)
+            '+255744320059',
+            array(
+                'from' => $twilio_number,
+                'body' => 'Habri! Gari lako lipo nje ya mipaka uliyoiweka'
+            )
+        );
+        dd('message sent');
+    }
     
 }
