@@ -5,7 +5,7 @@
         <div class="col-7">
                 <h3 class="content-header ml-2">List of Vehicle</h3>
         </div>
-        <div class="col-5"><button href="#" class="btn btn-sm btn-outline-primary mr-4 mt-4 float-right"  id="add">+ Service</button></div>
+        <div class="col-5"><button href="#" class="btn btn-sm btn-outline-primary mr-4 mt-4 float-right"  id="add" style="display: {{ auth()->user()->roleId === 1 ? '' : 'none' }};">+ Vehicle</button></div>
     </div>
     <div class="card-body">
       <table  class="table-hover table table-bordered table-striped data-table">
@@ -15,7 +15,7 @@
           <th>Name</th>
           <th>Plate Number</th>
           <th>Chesis Number</th>
-          <th>Model</th>
+          <th>Owner</th>
           <th>Type</th>
           <th>Action</th>
         </tr>
@@ -27,11 +27,11 @@
                 <td>{{ $serv->name }}</td>
                 <td>{{ $serv->plate_number }}</td>
                 <td>{{ $serv->chesis_number }}</td>
-                <td>{{ $serv->model }}</td>
+                <td>{{ $serv->user->fname ?? '' }}</td>
                 <td>{{ $serv->type }}</td>
                 <td>
                      <button type="button" class="btn  btn-outline-secondary btn-sm edit" value="{{ $serv->uuid }}" id="edit">Edit</button>
-                     <button type="button" class="btn  btn-outline-danger btn-sm delete" value="{{ $serv->uuid }}">Delete</button>
+                     <button type="button" class="btn  btn-outline-danger btn-sm delete " style="display: {{ auth()->user()->roleId === 1 ? '' : 'none' }};" value="{{ $serv->uuid }}">Delete</button>
                      <a href="{{ url('map') }}" class="btn  btn-outline-secondary btn-sm ">Track</a>
                      <a href="{{ url('geofence') }}" class="btn  btn-outline-secondary btn-sm ">Geofence</a>
                 </td>
@@ -85,9 +85,14 @@
                                   <label for="exampleInputPassword1">Chesis Number</label>
                                   <input type="text" name="chesis_number" class="form-control" id="chesis_number" placeholder="">
                                 </div>
-                                <div class="form-group">
-                                  <label for="exampleInputPassword1">Vehicle Image</label>
-                                  <input type="file" name="image" class="form-control" id="image" placeholder="">
+                                  <div class="form-group">
+                                    <label for="">Owner</label>
+                                    <select class="form-control" name="owner" id="owner">
+                                      <option value="">--Select--</option>
+                                      @foreach($owners as $item)
+                                      <option value="{{ $item->id }}">{{ $item->fname }}</option>
+                                      @endforeach
+                                    </select>
                                 </div>
                               </div>
                             </div>
@@ -196,7 +201,8 @@ $('#sendData').click(function(event){
                     type: $('#type').val(),
                     plate_number: $('#plate_number').val(),
                     chesis_number: $('#chesis_number').val(),
-                    image: $('#image').val(),
+                    owner: $('#owner').val(),
+                    _token: $('meta[name="csrf-token"]').attr('content'),
                 }
 
                 if ($('#name').val() !== ''  && $('#plate_number').val() !== '') {
@@ -209,6 +215,7 @@ $('#sendData').click(function(event){
                       $('#modal-lg').modal('hide');
                       toastr.success(response.success);
                       form.reset();
+                      location.reload();
                     },
                     error: function (errors) {
                       $.each(errors, function(key, value) {

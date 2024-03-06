@@ -17,9 +17,11 @@ Route::get('/vehicles/show/{uuid}', [VehicleController::class, 'show'])->name('v
 Route::delete('/vehicles/destroy/{uuid}', [VehicleController::class, 'destroy'])->name('vehicles.destroy');
 Route::get('/map', [VehicleController::class, 'map'])->name('vehicles.map');
 Route::get('/send-sms', [VehicleController::class, 'sendSms']);
+Route::get('/send-email', [VehicleController::class, 'sendEmail']);
+
 
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
-Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
+Route::post('/users/store-data', [UserController::class, 'store'])->name('users.store');
 Route::get('/users/edit/{uuid}', [UserController::class, 'edit'])->name('users.edit');
 Route::post('/users/update/{uuid}', [UserController::class, 'update'])->name('users.update');
 Route::get('/users/show/{uuid}', [UserController::class, 'show'])->name('users.show');

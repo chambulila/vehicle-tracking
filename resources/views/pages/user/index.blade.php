@@ -77,16 +77,12 @@
                               </div>
                               <div class="col-md-6">
                                 <div class="form-group">
-                                  <label for="exampleInputPassword1">Phone</label>
-                                  <input type="number" name="phone" class="form-control" id="phone" placeholder="">
+                                  <label for="">Phone</label>
+                                  <input type="number" name="phone" class="form-control phoneNumber" id="phoneNumber" placeholder="">
                                 </div>
                                 <div class="form-group">
                                   <label for="exampleInputPassword1">Email</label>
                                   <input type="email" name="email" class="form-control" id="email" placeholder="">
-                                </div>
-                                <div class="form-group">
-                                  <label for="exampleInputPassword1">Role</label>
-                                  <input type="text" name="roleId" class="form-control" id="roleId" placeholder="">
                                 </div>
                               </div>
                             </div>
@@ -117,7 +113,7 @@
                    @csrf
                     <div class="card card-dark">
                         <div class="card-header">
-                          <h3 class="card-title">Edit User</small></h3>
+                          <h3 class="card-title">Edit Owner</small></h3>
                         </div>
                         <div class="row">
                           <div class="col-md-6">
@@ -142,10 +138,6 @@
                             <div class="form-group">
                               <label for="exampleInputPassword1">Email</label>
                               <input type="email" name="emaill" class="form-control" id="emaill" placeholder="">
-                            </div>
-                            <div class="form-group">
-                              <label for="exampleInputPassword1">Role</label>
-                              <input type="text" name="roleIdd" class="form-control" id="roleIdd" placeholder="">
                             </div>
                           </div>
                         </div>
@@ -189,24 +181,26 @@
 
 $('#sendData').click(function(event){
             event.preventDefault();
+            alert($('#phone').val());
             var  form = {
                     fname: $('#fname').val(),
                     lname: $('#lname').val(),
                     location: $('#location').val(),
                     email: $('#email').val(),
                     password: $('#password').val(),
-                    roleId: $('#roleId').val(),
+                    phone: $('.phoneNumber').val(),
+                    token:  $('meta[name="csrf-token"]').attr('content')
                 }
 
                 if ($('#fname').val() !== ''  && $('#email').val() !== '') {
                   $.ajax({
-                    url: '/users/store',
+                    url: '/users/store-data',
                     method: 'post',
                     dataType: 'JSON',
                     data: form,
                     success: function (response) {
                       $('#modal-lg').modal('hide');
-                      toastr.success(response.success);
+                      toastr.success(response.message);
                       form.reset();
                     },
                     error: function (errors) {
@@ -295,7 +289,7 @@ $('tbody').html(data);
 
 //delete
 $(document).on('click', '.delete', function () {
-    var uuid = $(this).attr('value');
+    var id = $(this).val();
     Swal.fire({
     title: "Are you sure?",
     text: "You will not be able to retrieve it again",
@@ -310,7 +304,10 @@ $(document).on('click', '.delete', function () {
         if (result.isConfirmed) {
             $.ajax({
                 method: 'delete',
-                url: '/vehicles/destroy/' + uuid,
+                url: '/users/destroy/' + id,
+                data: {
+                  token: $('meta[name="csrf-token"]').attr('content')
+                },
                 success: function(response) {
                     toastr.success(response.success);
                     // getData();

@@ -5,10 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Vehicle;
 use App\Models\Geofence;
 use App\Models\Geocode;
+use App\Models\User;
+use App\Models\SmsHistory;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\Datatables;
 use DB;
 use Twilio\Rest\Client;
+use Auth;
+use App\Mail\SendMail;
+use Illuminate\Support\Facades\Mail;
 
 
 class VehicleController extends Controller
@@ -22,8 +27,11 @@ class VehicleController extends Controller
 
     public function index()
     {
+        // dd(User::whereRoleid(0)->get(['id', 'fname']));
+        // dd(Vehicle::where('owner_id', Auth::User()->id)->get());
         return view('pages.vehicle.index', [
-            'vehicles' => Vehicle::all()
+            'vehicles' => Auth::User()->roleId === 1 ? Vehicle::all() : Vehicle::where('owner_id', Auth::User()->id)->get(),
+            'owners' => User::whereRoleid(0)->get(['id', 'fname'])
         ]);
     }
 
@@ -48,36 +56,37 @@ class VehicleController extends Controller
     public function store(Request $request)
     {
         // dd(request()->all());
-        request()->validate([
-            'name' => 'required',
-            'model' => 'required',
-            'type' => 'required',
-            'plate_number' => 'required',
-            'chesis_number' => 'required',
-        ]);
-        if (request()->hasFile('image')) {
-            $path = time().request('image').extension();
-            request('image').move(public_path('images'), $path);
+        // request()->validate([
+        //     'name' => 'required',
+        //     'model' => 'required',
+        //     'type' => 'required',
+        //     'plate_number' => 'required',
+        //     'chesis_number' => 'required',
+        // ]);
+        // if (request()->hasFile('image')) {
+        //     $path = time().request('image').extension();
+        //     request('image').move(public_path('images'), $path);
 
+        //     \App\Models\Vehicle::create([
+        //         'name' => request('name'),
+        //         'model' => request('model'),
+        //         'type' => request('type'),
+        //         'plate_number' => request('plate_number'),
+        //         'chesis_number' => request('chesis_number'),
+        //         'image' => $path,
+        //         'uuid' => \Str::uuid(),
+        //     ]);
+        // } else {
             \App\Models\Vehicle::create([
                 'name' => request('name'),
                 'model' => request('model'),
                 'type' => request('type'),
                 'plate_number' => request('plate_number'),
                 'chesis_number' => request('chesis_number'),
-                'image' => $path,
+                'owner_id' => request('owner'),
                 'uuid' => \Str::uuid(),
             ]);
-        } else {
-            \App\Models\Vehicle::create([
-                'name' => request('name'),
-                'model' => request('model'),
-                'type' => request('type'),
-                'plate_number' => request('plate_number'),
-                'chesis_number' => request('chesis_number'),
-                'uuid' => \Str::uuid(),
-            ]);
-        }
+        // }
  
         return response()->json(['success' => 'Vehicle added']);
     }
@@ -170,6 +179,17 @@ class VehicleController extends Controller
 
     public function checkBoundary()
     {
+        $vehicle_id = 9;
+        $user = User::whereIn('id', Vehicle::whereId($vehicle_id)->get(['owner_id']))->first();
+        // dd($user->phone);
+        $parameters = [
+            "phone" => $user->phone,
+            "vehicle_id" => $vehicle_id,
+            "user_id" => $user->id,
+            "user_name" => $user->fname,
+            "email" => 'kelvinchambulila5@gmail.com',
+        ];
+
         $vehicle = Geocode::findOrFail(1);
         $vehicleId = $vehicle->id;
 
@@ -188,6 +208,12 @@ class VehicleController extends Controller
     // Check if the distance is greater than the threshold
     if ($distance > $threshold) {
         return response()->json(['message' => 'out of boundary']);
+    }
+
+    $sms = SmsHistory::where('vehicle_id', $vehicle_id)->where('created_at', now()->toDateString())->count();
+    if ($sms < 1) {
+        SmsHistory::create($parameters);
+        // $this->sendEmail($parameters);
     }
 
     return response()->json(['message' => 'within the predefined area']);
@@ -231,12 +257,16 @@ function haversineDistance($lat1, $lon1, $lat2, $lon2)
 
     public function sendSms()
     {
-        // TWILIO_SID=AC7138f025430ea3d244470aa4000ac0f5
-        // TWILIO_TOKEN=55dc6f6186094c33e6a286dc03faf533
-        // TWILIO_PHONE=+14088053716
-        $account_sid = getenv('TWILIO_SID');
-        $auth_token = getenv('TWILIO_TOKEN');
-        $twilio_number = getenv('TWILIO_PHONE');
+        $TWILIO_SID='AC7138f025430ea3d244470aa4000ac0f5';
+        $TWILIO_TOKEN='55dc6f6186094c33e6a286dc03faf533';
+        $TWILIO_PHONE= +14088053716;
+        // $account_sid = getenv('TWILIO_SID');
+        // $auth_token = getenv('TWILIO_TOKEN');
+        // $twilio_number = getenv('TWILIO_PHONE');
+
+        $account_sid = $TWILIO_SID;
+        $auth_token = $TWILIO_TOKEN;
+        $twilio_number = $TWILIO_PHONE;
         $client = new Client($account_sid, $auth_token);
         $client->messages->create(
             // Where to send a text message (your cell phone?)
@@ -246,7 +276,17 @@ function haversineDistance($lat1, $lon1, $lat2, $lon2)
                 'body' => 'Habri! Gari lako lipo nje ya mipaka uliyoiweka'
             )
         );
-        dd('message sent');
+        return true;
+    }
+
+    public function sendEmail($parameters)
+    {
+        $title = 'Welcome to the laracoding.com example email';
+        $body = 'Thank you for participating!';
+
+        Mail::to($parameters["email"])->send(new SendMail($title, $body));
+
+        return "Email sent successfully!";
     }
     
 }

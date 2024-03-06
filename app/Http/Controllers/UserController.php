@@ -39,15 +39,21 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        \App\Models\User::create([
+        // dd($request->all());
+        $user = \App\Models\User::create([
             'fname' => request('fname'),
             'lname' => request('lname'),
             'location' => request('location'),
             'phone' =>  request('phone'),
-            'password' => request('password') ? \Hash::make(request('password'),'1234567890') : \Hash::make(request('phone')),
+            'password' => request('password') ? \Hash::make(request('password')) : \Hash::make(request('phone')),
             'email' =>  request('email'),
-            'roleId' => request('roleId')
+            'roleId' => 0,
         ]);
+        if ($user) {
+            return response()->json([true, 'message' => 'Owner  added successfully', 200]);
+        }else{
+            return response()->json([false, 'message' => 'An error occured', 400]);
+        }
     }
 
 
