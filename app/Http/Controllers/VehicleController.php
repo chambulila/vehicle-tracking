@@ -184,10 +184,11 @@ class VehicleController extends Controller
         // dd($user->phone);
         $parameters = [
             "phone" => $user->phone,
-            "vehicle_id" => $vehicle_id,
+            "plate_number" => Vehicle::whereId($vehicle_id)->get(['plate_number']),
             "user_id" => $user->id,
             "user_name" => $user->fname,
             "email" => 'kelvinchambulila5@gmail.com',
+            "url" => 'http://127.0.0.1:8000/map',
         ];
 
         $vehicle = Geocode::findOrFail(1);
@@ -210,10 +211,10 @@ class VehicleController extends Controller
         return response()->json(['message' => 'out of boundary']);
     }
 
-    $sms = SmsHistory::where('vehicle_id', $vehicle_id)->where('created_at', now()->toDateString())->count();
-    if ($sms < 1) {
+    $sms = SmsHistory::where('vehicle_id', $vehicle_id)->where('created_at', now()->toDateString())->get()->count();
+    if ($sms < 3 & $distance > $threshold) {
         SmsHistory::create($parameters);
-        // $this->sendEmail($parameters);
+        $this->sendEmail($parameters);
     }
 
     return response()->json(['message' => 'within the predefined area']);
@@ -281,8 +282,8 @@ function haversineDistance($lat1, $lon1, $lat2, $lon2)
 
     public function sendEmail($parameters)
     {
-        $title = 'Welcome to the laracoding.com example email';
-        $body = 'Thank you for participating!';
+        $title = 'How are you doing!';
+        $body = 'Your vehicle with plate number ' .$parameters["plate_number"]. 'is out of your pre defined area. Click the link to track ' .$parameters["url"];
 
         Mail::to($parameters["email"])->send(new SendMail($title, $body));
 
